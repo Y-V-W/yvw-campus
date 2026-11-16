@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#08152d">
+<title>العالم الافتراضي اليمني – الحرم ثلاثي الأبعاد</title>
+<style>
+:root{--navy:#08152d;--panel:#102449;--line:#355b91;--cyan:#63e4ed;--white:#f5f8ff;--muted:#c0cde5}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--navy);color:var(--white);font-family:Tahoma,Arial,sans-serif}
+#scene{position:fixed;inset:0;touch-action:none}
+header{position:fixed;z-index:5;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:linear-gradient(#071329ee,#07132988);backdrop-filter:blur(8px);border-bottom:1px solid #ffffff20}
+.brand{display:flex;align-items:center;gap:9px;font-weight:bold}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#62e5ed,#8272ff);display:grid;place-items:center;color:#071329;font-size:22px}
+.brand small{display:block;color:#bdcde8;font-size:10px;direction:ltr}.top-actions{display:flex;gap:7px}button{font:inherit;cursor:pointer}.topbtn,.action{border:1px solid #5073a4;background:#142d54eF;color:white;border-radius:11px;padding:9px 11px;font-size:12px}
+#hint{position:fixed;z-index:4;top:67px;left:50%;transform:translateX(-50%);background:#08152ddd;border:1px solid #4c729f;padding:8px 13px;border-radius:22px;font-size:12px;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+#info{position:fixed;z-index:4;right:12px;top:112px;width:min(260px,65vw);background:#0b1b38eF;border:1px solid #3a5d8f;border-radius:16px;padding:13px;box-shadow:0 12px 35px #0005}
+#info h3{margin:0 0 6px;color:var(--cyan);font-size:15px}#info p{margin:0;color:#d1dcf0;font-size:12px;line-height:1.7}
+#info .close{float:left;background:transparent;border:0;color:#fff;font-size:18px}
+#controls{position:fixed;z-index:5;bottom:15px;left:12px;right:12px;display:flex;align-items:end;justify-content:space-between;pointer-events:none}
+#pad{width:132px;height:132px;position:relative;border-radius:50%;background:#0b1c39a8;border:1px solid #6a8ab1;pointer-events:auto;touch-action:none}
+#nub{position:absolute;width:48px;height:48px;left:41px;top:41px;border-radius:50%;background:linear-gradient(135deg,#6be6ed,#7f83ff);box-shadow:0 4px 15px #0008}
+#actions{display:flex;flex-direction:column;gap:7px;align-items:end;pointer-events:auto}
+#actions .action{min-width:112px;text-align:center;background:#0c1e3ceF}
+#actions .action.primary{background:#52d7e3;color:#06152b;border:0;font-weight:bold}
+#signPanel{position:fixed;z-index:6;right:12px;top:112px;width:min(290px,74vw);max-height:52vh;overflow:auto;background:#0b1b38ed;border:1px solid #3a5d8f;border-radius:16px;padding:11px;box-shadow:0 12px 35px #0005}
+#signPanel h3{margin:0 0 7px;color:var(--cyan);font-size:14px}
+#signPanel p{font-size:10px;line-height:1.5;color:#cbd8eb;margin:4px 0 9px}
+#cameraBox{display:none;margin-top:8px}
+#cameraBox video{width:100%;border-radius:10px;transform:scaleX(-1);background:#020916}
+#cameraBox canvas{display:none}
+#cameraBox .camNote{font-size:10px;color:#d1dcf0;line-height:1.45;margin-top:5px}
+#signPanel .signBtns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#signPanel button{border:1px solid #5073a4;background:#142d54;color:#fff;border-radius:9px;padding:8px;font-size:11px}
+#signPanel button.primary{background:#52d7e3;color:#06152b;border:0;font-weight:bold}
+#signStatus{font-size:11px;color:#d1dcf0;margin-top:8px;line-height:1.5;min-height:30px}
+#voicePanel{position:fixed;z-index:6;left:12px;top:112px;width:min(285px,72vw);background:#0b1b38ed;border:1px solid #3a5d8f;border-radius:16px;padding:11px;box-shadow:0 12px 35px #0005}
+#voicePanel h3{margin:0 0 8px;color:var(--cyan);font-size:14px}
+#voicePanel .voiceBtns{display:flex;gap:6px;flex-wrap:wrap}
+#voicePanel button{border:1px solid #5073a4;background:#142d54;color:#fff;border-radius:9px;padding:8px;font-size:11px}
+#voicePanel button.primary{background:#52d7e3;color:#06152b;border:0;font-weight:bold}
+#voiceStatus{font-size:11px;line-height:1.6;color:#d1dcf0;margin:8px 0 0;min-height:34px}
+#voiceText{width:100%;margin-top:7px;border:1px solid #5073a4;border-radius:9px;background:#07162e;color:white;padding:8px;font:12px Tahoma,Arial}
+#footer{position:fixed;z-index:3;bottom:8px;left:50%;transform:translateX(-50%);font-size:10px;color:#c5d2e8;background:#08152dbb;padding:5px 9px;border-radius:12px;white-space:nowrap}
+#loading{position:fixed;z-index:10;inset:0;background:#08152d;display:grid;place-items:center;text-align:center;padding:25px}
+#loading .box{max-width:330px}#loading h2{color:var(--cyan)}#loading p{color:var(--muted);font-size:13px;line-height:1.8}
+#loading button{margin-top:10px;background:#62e1e9;color:#06152b;border:0;padding:10px 15px;border-radius:10px;font-weight:bold}
+@media(min-width:800px){#pad{width:150px;height:150px}#nub{left:50px;top:50px}#info{top:100px}#footer{bottom:10px}}
+</style>
+</head>
+<body>
+<div id="scene"></div>
+<header>
+ <div class="brand"><div class="logo">و</div><div>العالم الافتراضي اليمني<small>YEMENI VIRTUAL WORLD · YVW</small></div></div>
+ <div class="top-actions"><button class="topbtn" onclick="resetView()">إعادة الموقع</button><button class="topbtn" onclick="toggleInfo()">المساعدة</button></div>
+</header>
+<div id="hint">اسحب عصا التحكم للتحرك • المس المباني لاستكشافها</div>
+<section id="signPanel" aria-label="عرض حركات الإشارة">
+ <h3>🤟 قاموس الإشارات التجريبي</h3>
+ <p>اختر عبارة لمشاهدة تسلسل حركي توضيحي. هذه حركات أولية وليست ترجمة معتمدة للغة الإشارة العربية الموحدة.</p>
+ <div class="signBtns">
+  <button class="primary" data-sign="hello">مرحباً</button>
+  <button data-sign="how">كيف حالك؟</button>
+  <button data-sign="fine">أنا بخير</button>
+  <button data-sign="thanks">شكراً</button>
+ </div>
+ <div id="signStatus" aria-live="polite">اختر عبارة لبدء العرض.</div>
+</section>
+<section id="voicePanel" aria-label="التحدث مع شريف">
+ <h3>🎙️ تحدث مع شريف</h3>
+ <div class="voiceBtns">
+  <button class="primary" id="micBtn">🎤 ابدأ التحدث</button>
+  <button id="stopBtn">إيقاف</button>
+  <button id="gestureBtn">👋 حرّك اليد</button>
+ </div>
+ <input id="voiceText" type="text" placeholder="أو اكتب رسالتك هنا ثم اضغط Enter">
+ <div id="voiceStatus" aria-live="polite">اضغط «ابدأ التحدث» واسمح للمتصفح باستخدام الميكروفون. يمكنك أيضاً كتابة رسالتك.</div>
+</section>
+<aside id="info"><button class="close" onclick="document.getElementById('info').style.display='none'">×</button><h3 id="infoTitle">مرحباً بك في الحرم الجامعي</h3><p id="infoText">تحرك داخل الحرم باستخدام عصا التحكم. اقترب من المباني واضغط عليها لمعرفة مرافقها.</p></aside>
+<div id="controls">
+ <div id="pad" aria-label="عصا التحكم"><div id="nub"></div></div>
+ <div id="actions">
+  <button class="action primary" onclick="goTo('main')">🏛️ الساحة الرئيسية</button>
+  <button class="action" onclick="goTo('class')">🎓 القاعات التعليمية</button>
+  <button class="action" onclick="goTo('solar')">☀️ مختبر الطاقة</button>
+  <button class="action" onclick="goTo('sign')">🤟 مركز الإشارة</button>
+ </div>
+</div>
+<div id="footer">نموذج ثلاثي الأبعاد تجريبي • يعمل باللمس أو لوحة المفاتيح</div>
+<div id="loading"><div class="box"><div style="font-size:45px">🌐</div><h2>العالم الافتراضي اليمني</h2><p>جارٍ تجهيز الحرم الجامعي ثلاثي الأبعاد. يتطلب هذا النموذج اتصالاً بالإنترنت لتحميل محرك العرض.</p><button onclick="location.reload()">إعادة المحاولة</button></div></div>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>\n<script type="module">
+import * as THREE from 'three';
+const mount=document.getElementById('scene'), loading=document.getElementById('loading');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x91c9e8);scene.fog=new THREE.Fog(0x91c9e8,35,100);
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,180);
+camera.position.set(0,7,15);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;mount.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xdaf3ff,0x47634d,2.0));
+const sun=new THREE.DirectionalLight(0xfff1d2,2.3);sun.position.set(-15,25,12);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+const mat=(color,roughness=.8)=>new THREE.MeshStandardMaterial({color,roughness});
+const grass=mat(0x4d966d),pathmat=mat(0xc7c7b8),white=mat(0xe9f0f3),glass=mat(0x397b9c,.3),roof=mat(0x315478),gold=mat(0xe9c77b),trunk=mat(0x755139),leaf=mat(0x287b55);
+function box(w,h,d,m,x,y,z){let o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
+function ground(w,h,d,m,x,y,z){let o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.receiveShadow=true;scene.add(o);return o}
+ground(110,.4,110,grass,0,-.25,0);
+ground(9,.12,75,pathmat,0,.02,0);ground(75,.12,8,pathmat,0,.03,0);
+ground(22,.13,22,mat(0xb6c9c6),0,.05,0);
+function tree(x,z){box(.45,2,.45,trunk,x,1,z);let crown=new THREE.Mesh(new THREE.SphereGeometry(1.25,12,10),leaf);crown.position.set(x,2.7,z);crown.castShadow=true;scene.add(crown)}
+for(let x=-25;x<=25;x+=8){tree(x,-18);tree(x,18)}for(let z=-10;z<=10;z+=8){tree(-28,z);tree(28,z)}
+const facilities={};
+function building(id,name,desc,x,z,color=0xe8eff4){
+ const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ let base=new THREE.Mesh(new THREE.BoxGeometry(10,5.5,8),mat(color));base.position.y=2.8;base.castShadow=true;base.receiveShadow=true;g.add(base);
+ let top=new THREE.Mesh(new THREE.BoxGeometry(10.5,.45,8.5),mat(0x315477));top.position.y=5.65;g.add(top);
+ for(let xx=-3.7;xx<=3.8;xx+=1.85){let win=new THREE.Mesh(new THREE.BoxGeometry(1.15,2.25,.12),glass);win.position.set(xx,2.8,4.06);g.add(win)}
+ let door=new THREE.Mesh(new THREE.BoxGeometry(1.5,2.5,.2),mat(0x9c7549));door.position.set(0,1.35,4.13);g.add(door);
+ let sign=box(4.8,.75,.22,mat(0x12345c),x,4.7,z+4.22);sign.userData={id,name,desc};
+ // front steps
+ let step=new THREE.Mesh(new THREE.BoxGeometry(3,.25,1.3),mat(0xd5d9d5));step.position.set(0,.18,4.7);g.add(step);
+ facilities[id]={x,z,name,desc,object:base};base.userData={id,name,desc};return g;
+}
+building('class','القاعات التعليمية','قاعات للمحاضرات والدروس والاختبارات والأنشطة التعليمية.',-15,-15,0xe6edf4);
+building('solar','مختبر الطاقة الشمسية','مختبر تدريبي للتعرف على الألواح الشمسية والبطاريات والإنفرترات وأنظمة الحماية.',15,-15,0xe8eee8);
+building('sign','مركز لغة الإشارة','مركز شامل لتعليم لغة الإشارة والتواصل المرئي بالتعاون مع مختصين ومجتمع الصم.',-15,15,0xf0e8dc);
+building('ai','مركز الذكاء الاصطناعي','مساحة للتعلم عن الذكاء الاصطناعي والبرمجة والتقنيات الرقمية.',15,15,0xe6e8f4);
+building('admin','الإدارة والاستقبال','بوابة الحرم الجامعي ومركز الإرشاد وخدمات المستخدمين.',0,-31,0xf1eadc);
+// solar panels as visual props
+for(let i=0;i<3;i++){let p=new THREE.Mesh(new THREE.BoxGeometry(2.5,.12,1.7),mat(0x164c76,.25));p.position.set(15+(i-1)*2.8,.7,-9);p.rotation.x=-.18;scene.add(p)}
+// campus globe
+let globe=new THREE.Mesh(new THREE.SphereGeometry(1.6,24,18),new THREE.MeshStandardMaterial({color:0x39a9d4,metalness:.25,roughness:.25,emissive:0x06354c}));globe.position.set(0,2.2,0);scene.add(globe);
+let ring=new THREE.Mesh(new THREE.TorusGeometry(2.1,.07,8,64),gold);ring.position.copy(globe.position);ring.rotation.x=1.15;scene.add(ring);
+// 3D campus guide avatar: "راشد"
+const avatar=new THREE.Group();scene.add(avatar);
+const skin=mat(0xb97855), dark=mat(0x202b3d), jacket=mat(0x174a78), shirt=mat(0xf0f3f4), pants=mat(0x26364d), shoe=mat(0x101b2b), trim=mat(0x59d7e2);
+function sphere(parent,geo,material,x,y,z){const m=new THREE.Mesh(geo,material);m.position.set(x,y,z);m.castShadow=true;parent.add(m);return m}
+function limb(parent,r1,r2,len,material,x,y,z){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,len,10),material);m.position.set(x,y,z);m.castShadow=true;parent.add(m);return m}
+// legs and shoes
+limb(avatar,.16,.19,.78,pants,-.19,.48,0);limb(avatar,.16,.19,.78,pants,.19,.48,0);
+sphere(avatar,new THREE.BoxGeometry(.27,.14,.48),shoe,-.19,.12,.08);
+sphere(avatar,new THREE.BoxGeometry(.27,.14,.48),shoe,.19,.12,.08);
+// torso, jacket and shirt
+sphere(avatar,new THREE.CapsuleGeometry(.43,.72,5,12),jacket,0,1.35,0);
+sphere(avatar,new THREE.BoxGeometry(.32,.72,.08),shirt,0,1.38,.405);
+sphere(avatar,new THREE.ConeGeometry(.10,.30,4),trim,0,1.67,.48);
+// neck and head
+limb(avatar,.12,.12,.22,skin,0,1.91,0);
+sphere(avatar,new THREE.SphereGeometry(.36,20,16),skin,0,2.22,.02);
+// hair cap and side hair
+sphere(avatar,new THREE.SphereGeometry(.37,20,12,0,Math.PI*2,0,Math.PI/1.9),dark,0,2.34,-.005);
+sphere(avatar,new THREE.SphereGeometry(.13,12,10),dark,-.31,2.22,.01);
+sphere(avatar,new THREE.SphereGeometry(.13,12,10),dark,.31,2.22,.01);
+// eyes, brows and smile
+for(const ex of [-.13,.13]){sphere(avatar,new THREE.SphereGeometry(.035,8,8),dark,ex,2.25,.342);sphere(avatar,new THREE.SphereGeometry(.045,8,8),shirt,ex,2.31,.34)}
+const smile=new THREE.Mesh(new THREE.TorusGeometry(.09,.018,6,16,Math.PI),dark);smile.position.set(0,2.10,.35);smile.rotation.z=Math.PI;avatar.add(smile);
+// Clearly masculine styling: short moustache and neat beard
+sphere(avatar,new THREE.SphereGeometry(.105,12,8),dark,0,2.015,.335);
+sphere(avatar,new THREE.SphereGeometry(.16,14,10),dark,0,1.99,.20).scale.set(1,.62,.55);
+// arms with hands
+const armL=limb(avatar,.105,.13,.72,jacket,-.51,1.40,0);armL.rotation.z=-.16;
+const armR=limb(avatar,.105,.13,.72,jacket,.51,1.40,0);armR.rotation.z=.16;
+const handL=sphere(avatar,new THREE.SphereGeometry(.12,10,8),skin,-.54,1.02,.03);
+const handR=sphere(avatar,new THREE.SphereGeometry(.12,10,8),skin,.54,1.02,.03);
+const gesture={active:false,kind:'wave',time:0};
+function animateGesture(kind='wave'){gesture.active=true;gesture.kind=kind;gesture.time=0;}
+window.animateGesture=animateGesture;
+// Simplified articulated hand models for demonstrative sign sequences
+function makeHand(x){
+ const g=new THREE.Group();avatar.add(g);g.position.set(x,1.02,.16);
+ const palm=new THREE.Mesh(new THREE.BoxGeometry(.22,.25,.09),new THREE.MeshStandardMaterial({color:0xd99b78,roughness:.72}));g.add(palm);
+ const fingers=[];
+ for(let k=0;k<4;k++){
+  const f=new THREE.Group();f.position.set((k-1.5)*.052,.115,.005);g.add(f);
+  const seg=new THREE.Mesh(new THREE.CylinderGeometry(.022,.027,.14,7),new THREE.MeshStandardMaterial({color:0xd99b78,roughness:.72}));seg.position.y=.07;f.add(seg);
+  const tip=new THREE.Mesh(new THREE.SphereGeometry(.023,7,6),seg.material);tip.position.y=.14;f.add(tip);fingers.push(f);
+ }
+ const thumb=new THREE.Mesh(new THREE.CapsuleGeometry(.025,.09,3,6),new THREE.MeshStandardMaterial({color:0xd99b78,roughness:.72}));
+ thumb.position.set(x<0?.13:-.13,-.015,.015);thumb.rotation.z=x<0?-.7:.7;g.add(thumb);
+ return {group:g,fingers,thumb};
+}
+const signHandL=makeHand(-.54),signHandR=makeHand(.54);
+function setHandPose(hand,curl,spread=0){
+ hand.fingers.forEach((f,i)=>{f.rotation.x=-curl;f.rotation.z=(i-1.5)*spread;});
+ hand.thumb.rotation.z=(hand===signHandL?-.7:.7)+(curl*.35);
+}
+const signSequences={
+ hello:[{t:'ارفع اليد اليمنى',a:.9,b:.05,l:0,r:.1},{t:'حرّك اليد بتحية لطيفة',a:.2,b:.1,l:.15,r:.35},{t:'اخفض اليد بهدوء',a:0,b:0,l:0,r:0}],
+ how:[{t:'قرّب اليدين أمام الجسم',a:.25,b:.25,l:.2,r:.2},{t:'حرّك اليدين بحركة استفسار',a:.45,b:.45,l:-.2,r:.2},{t:'انتظر استجابة الطرف الآخر',a:.1,b:.1,l:0,r:0}],
+ fine:[{t:'ضع اليد قرب الصدر',a:.35,b:.15,l:.1,r:0},{t:'حرّك اليد للأمام',a:.1,b:.35,l:0,r:.25},{t:'أعد اليد لوضع الراحة',a:0,b:0,l:0,r:0}],
+ thanks:[{t:'ابدأ واليد قرب أعلى الصدر',a:.25,b:.1,l:.1,r:0},{t:'حرّك اليد للأمام بلطف',a:.1,b:.1,l:.05,r:.3},{t:'اختم بإيماءة هادئة',a:0,b:0,l:0,r:0}]
+};
+let signTimer=null;
+function playSign(key){
+ const seq=signSequences[key];if(!seq)return;
+ clearInterval(signTimer);let n=0;
+ const labels={hello:'مرحباً',how:'كيف حالك؟',fine:'أنا بخير',thanks:'شكراً'};
+ const apply=()=>{
+  const step=seq[n];document.getElementById('signStatus').textContent=labels[key]+' — '+step.t;
+  armL.rotation.z=-.16+step.l;armR.rotation.z=.16+step.r;
+  setHandPose(signHandL,step.a,.12);setHandPose(signHandR,step.b,.12);
+  if(n===0)gesture.time=0;
+  n++;
+  if(n>=seq.length){clearInterval(signTimer);signTimer=null;}
+ };
+ apply();signTimer=setInterval(apply,1150);
+}
+document.querySelectorAll('[data-sign]').forEach(b=>b.addEventListener('click',()=>playSign(b.dataset.sign)));
+window.playSign=playSign;
+// small backpack
+sphere(avatar,new THREE.BoxGeometry(.58,.68,.24),dark,0,1.30,-.36);
+// cyan campus badge
+sphere(avatar,new THREE.CircleGeometry(.10,16),trim,0,1.52,.455);
+// floating name plate
+const namePlate=new THREE.Group();avatar.add(namePlate);namePlate.position.set(0,2.95,0);
+const plate=new THREE.Mesh(new THREE.PlaneGeometry(1.35,.38),new THREE.MeshBasicMaterial({color:0x0c2344,transparent:true,opacity:.9,side:THREE.DoubleSide}));namePlate.add(plate);
+const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;
+const ctx=canvas.getContext('2d');ctx.fillStyle='#0c2344';ctx.fillRect(0,0,512,128);ctx.strokeStyle='#63e4ed';ctx.lineWidth=7;ctx.strokeRect(4,4,504,120);ctx.fillStyle='#ffffff';ctx.font='bold 62px Tahoma,Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('شريف | مرشدك',256,65);
+const labelTex=new THREE.CanvasTexture(canvas);const label=new THREE.Mesh(new THREE.PlaneGeometry(1.35,.34),new THREE.MeshBasicMaterial({map:labelTex,transparent:true,side:THREE.DoubleSide}));label.position.z=.012;namePlate.add(label);
+avatar.position.set(0,0,9);
+let target=new THREE.Vector3(0,0,0),move={x:0,z:0},keys={};
+function setInfo(name,desc){document.getElementById('info').style.display='block';document.getElementById('infoTitle').textContent=name;document.getElementById('infoText').textContent=desc}
+setInfo('شريف – مرشدك الافتراضي','أهلاً بك! أنا شريف، مرشدك في العالم الافتراضي اليمني. تحرك داخل الحرم، وسأساعدك في اكتشاف القاعات والمختبرات.');
+function goTo(id){if(id==='main'){avatar.position.set(0,0,9);setInfo('الساحة الرئيسية','أنت الآن في الساحة الرئيسية. اختر أحد المرافق للتجول داخله.');return}let f=facilities[id];if(!f)return;let dx=avatar.position.x-f.x,dz=avatar.position.z-f.z,len=Math.hypot(dx,dz)||1;avatar.position.set(f.x+dx/len*8,0,f.z+dz/len*8);setInfo(f.name,f.desc)}
+// Camera-based hand-shape recognition prototype (not a certified sign-language translator)
+const cameraStart=document.getElementById('cameraStart');
+const cameraBox=document.getElementById('cameraBox');
+const signVideo=document.getElementById('signVideo');
+let cameraStream=null,handTracker=null,cameraActive=false,lastGesture='',lastGestureAt=0;
+function classifyHand(lm){
+ const tips=[8,12,16,20],pips=[6,10,14,18];
+ const extended=tips.map((tip,i)=>lm[tip].y<lm[pips[i]].y);
+ const count=extended.filter(Boolean).length;
+ const thumbOpen=Math.abs(lm[4].x-lm[2].x)>.055;
+ if(count>=4 && thumbOpen)return {name:'كف مفتوح',phrase:'شكل كف مفتوح — قد يكون إيماءة ترحيب، وليس معنى إشارة مؤكداً'};
+ if(count===0 && !thumbOpen)return {name:'قبضة',phrase:'شكل قبضة اليد — لا يمكن استنتاج معناها اللغوي من الشكل وحده'};
+ if(extended[0] && extended[1] && !extended[2] && !extended[3])return {name:'إصبعان مرفوعان',phrase:'إصبعان مرفوعان — تعرّف شكلي فقط، والمعنى يعتمد على اتجاه اليد والسياق'};
+ if(extended[0] && !extended[1] && !extended[2] && !extended[3])return {name:'إصبع واحد',phrase:'إصبع واحد مرفوع — تعرّف شكلي فقط'};
+ return {name:'حركة يد غير مصنفة',phrase:'أرى اليد، لكن لم أتعرف على وضعيتها بوضوح. قرّب اليد للكاميرا وأظهر الأصابع كاملة.'};
+}
+async function startHandCamera(){
+ if(!navigator.mediaDevices?.getUserMedia){document.getElementById('signStatus').textContent='الكاميرا تحتاج متصفحاً يدعمها واتصال HTTPS.';return}
+ try{
+  cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});
+  signVideo.srcObject=cameraStream;cameraBox.style.display='block';await signVideo.play();
+  if(!window.Hands){document.getElementById('signStatus').textContent='تعذر تحميل مكتبة التعرف على اليد. تحقق من الإنترنت ثم أعد تحميل الصفحة.';return}
+  handTracker=new window.Hands({locateFile:file=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+  handTracker.setOptions({maxNumHands:1,modelComplexity:1,minDetectionConfidence:.65,minTrackingConfidence:.6});
+  handTracker.onResults(results=>{
+   const lm=results.multiHandLandmarks?.[0];
+   if(!lm){document.getElementById('signStatus').textContent='الكاميرا تعمل؛ لم تظهر يد بعد. ارفع يدك أمام الكاميرا.';return}
+   const g=classifyHand(lm);const now=Date.now();
+   if(g.name!==lastGesture || now-lastGestureAt>2600){
+    lastGesture=g.name;lastGestureAt=now;
+    document.getElementById('signStatus').textContent='التعرف البصري: '+g.phrase;
+   }
+  });
+  cameraActive=true;cameraStart.textContent='📷 إيقاف الكاميرا';
+  const detect=async()=>{if(!cameraActive)return;if(signVideo.readyState>=2){try{await handTracker.send({image:signVideo})}catch(e){}}requestAnimationFrame(detect)};
+  detect();
+  document.getElementById('signStatus').textContent='الكاميرا تعمل. ارفع يدك كاملة أمام العدسة لتجربة التعرف على شكلها.';
+ }catch(e){document.getElementById('signStatus').textContent='لم نتمكن من تشغيل الكاميرا: '+(e.name==='NotAllowedError'?'لم تسمح بإذن الكاميرا.':e.message);}
+}
+function stopHandCamera(){
+ cameraActive=false;if(handTracker){handTracker.close();handTracker=null}
+ if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}
+ signVideo.srcObject=null;cameraBox.style.display='none';cameraStart.textContent='📷 تشغيل الكاميرا والتعرف المبدئي';
+}
+cameraStart.addEventListener('click',()=>{if(cameraActive)stopHandCamera();else startHandCamera();});
+window.goTo=goTo;
+const voiceStatus=document.getElementById('voiceStatus');
+const micBtn=document.getElementById('micBtn');
+const stopBtn=document.getElementById('stopBtn');
+const voiceText=document.getElementById('voiceText');
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+let recognition=null, listening=false;
+function setVoiceStatus(t){voiceStatus.textContent=t}
+function speakArabic(text){
+ if(!('speechSynthesis' in window)){setVoiceStatus('المتصفح لا يدعم إخراج الصوت. يمكنك قراءة الرد الظاهر على الشاشة.');return}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(text);u.lang='ar-SA';u.rate=.92;u.pitch=1;
+ u.onstart=()=>animateGesture('talk');u.onend=()=>{gesture.active=false;armR.rotation.z=.16};
+ speechSynthesis.speak(u);
+}
+function respondTo(text){
+ const q=text.trim();if(!q)return;
+ if(/السلام|مرحبا|مرحباً|اهلا|أهلاً/.test(q))playSign('hello');
+ else if(/كيف حالك/.test(q))playSign('how');
+ else if(/أنا بخير|انا بخير/.test(q))playSign('fine');
+ else if(/شكرا|شكراً/.test(q))playSign('thanks');
+ setInfo('شريف يرد عليك',`سمعت منك: «${q}»`);
+ let answer='أهلاً بك! أنا شريف، مرشدك الافتراضي. كيف أستطيع مساعدتك في استكشاف العالم الافتراضي؟';
+ const t=q.toLowerCase();
+ if(/السلام|مرحبا|مرحباً|اهلا|أهلاً/.test(t)) answer='وعليكم السلام ورحمة الله وبركاته، أهلاً وسهلاً بك في العالم الافتراضي اليمني!';
+ else if(/اسمك|من أنت|من انت/.test(t)) answer='أنا شريف، مرشدك الافتراضي. أرافقك في الحرم وأساعدك على الوصول إلى القاعات والمختبرات.';
+ else if(/طاقة|شمس|شمسي/.test(t)) answer='يمكنك زيارة مختبر الطاقة الشمسية من زر مختبر الطاقة، وستجد فيه مساحة مخصصة للتدريب والتعلم.';
+ else if(/إشارة|اشارة|صم|سمع/.test(t)) answer='يمكنك زيارة مركز لغة الإشارة للتعرف على مساحة مخصصة للتواصل المرئي وتعليم لغة الإشارة.';
+ else if(/قاعة|تعليم|محاضرة|درس/.test(t)) answer='القاعات التعليمية مخصصة للمحاضرات والدروس والاختبارات. اضغط زر القاعات التعليمية للانتقال إليها.';
+ else if(/شكرا|شكراً/.test(t)) answer='العفو، يسعدني أن أكون مرشدك. أتمنى لك جولة ممتعة!';
+ setVoiceStatus('أنت: '+q+' | شريف: '+answer);
+ speakArabic(answer);
+}
+micBtn.addEventListener('click',()=>{
+ if(!SpeechRecognition){setVoiceStatus('التعرف على الكلام غير مدعوم في هذا المتصفح. استخدم مربع الكتابة أو جرّب Chrome مع اتصال آمن HTTPS.');return}
+ if(listening)return;
+ recognition=new SpeechRecognition();recognition.lang='ar-SA';recognition.continuous=false;recognition.interimResults=true;
+ recognition.onstart=()=>{listening=true;micBtn.textContent='🎙️ أستمع إليك…';setVoiceStatus('أنا أستمع إليك الآن، تحدث بوضوح.');};
+ recognition.onresult=e=>{let final='';let interim='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript;}if(interim)setVoiceStatus('أسمع: '+interim);if(final)respondTo(final);};
+ recognition.onerror=e=>setVoiceStatus('تعذر استخدام الميكروفون: '+e.error+'. تحقق من إذن الميكروفون واتصال HTTPS.');
+ recognition.onend=()=>{listening=false;micBtn.textContent='🎤 ابدأ التحدث';};
+ try{recognition.start()}catch(err){setVoiceStatus('لم يبدأ الميكروفون. حاول مرة أخرى بعد لحظة.');}
+});
+stopBtn.addEventListener('click',()=>{if(recognition&&listening)recognition.stop();if('speechSynthesis'in window)speechSynthesis.cancel();gesture.active=false;armR.rotation.z=.16;setVoiceStatus('تم إيقاف الاستماع والصوت.');});
+document.getElementById('gestureBtn').addEventListener('click',()=>{animateGesture('wave');setVoiceStatus('شريف يلوّح بيده مرحباً بك!');});
+voiceText.addEventListener('keydown',e=>{if(e.key==='Enter'){respondTo(voiceText.value);voiceText.value='';}});
+window.resetView=()=>{avatar.position.set(0,0,9);camera.position.set(0,7,15);setInfo('مرحباً بك في الحرم الجامعي','تحرك داخل الحرم باستخدام عصا التحكم. المس المباني لاستكشافها.')};window.toggleInfo=()=>{let e=document.getElementById('info');e.style.display=e.style.display==='none'?'block':'none'};
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+renderer.domElement.addEventListener('pointerdown',e=>{pointer.x=e.clientX/innerWidth*2-1;pointer.y=-(e.clientY/innerHeight)*2+1;raycaster.setFromCamera(pointer,camera);let hits=raycaster.intersectObjects(scene.children,true);for(let h of hits){let d=h.object.userData;if(d&&d.id){setInfo(d.name,d.desc);return}}});
+window.addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true);window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+// touch joystick
+const pad=document.getElementById('pad'),nub=document.getElementById('nub');let active=false;
+function joystick(e){let r=pad.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=43,l=Math.hypot(dx,dy);if(l>max){dx=dx/l*max;dy=dy/l*max}nub.style.transform=`translate(${dx}px,${dy}px)`;move.x=dx/max;move.z=dy/max}
+pad.addEventListener('pointerdown',e=>{active=true;pad.setPointerCapture(e.pointerId);joystick(e)});pad.addEventListener('pointermove',e=>{if(active)joystick(e)});function endPad(){active=false;move.x=0;move.z=0;nub.style.transform='translate(0,0)'}pad.addEventListener('pointerup',endPad);pad.addEventListener('pointercancel',endPad);
+const clock=new THREE.Clock();
+function animate(){requestAnimationFrame(animate);let dt=Math.min(clock.getDelta(),.05);let x=move.x,z=move.z;
+ if(keys['arrowleft']||keys['a'])x-=1;if(keys['arrowright']||keys['d'])x+=1;if(keys['arrowup']||keys['w'])z-=1;if(keys['arrowdown']||keys['s'])z+=1;
+ let len=Math.hypot(x,z);if(len>1){x/=len;z/=len}avatar.position.x+=x*dt*8;avatar.position.z+=z*dt*8;
+ avatar.position.x=THREE.MathUtils.clamp(avatar.position.x,-42,42);avatar.position.z=THREE.MathUtils.clamp(avatar.position.z,-42,42);
+ if(Math.abs(x)+Math.abs(z)>.01)avatar.rotation.y=Math.atan2(x,z);
+ target.set(avatar.position.x,1.4,avatar.position.z);
+ let desired=new THREE.Vector3(avatar.position.x,7,avatar.position.z+12);camera.position.lerp(desired,1-Math.pow(.001,dt));camera.lookAt(target);
+ globe.rotation.y+=dt*.25;
+ if(gesture.active){
+  gesture.time+=dt;
+  if(gesture.kind==='wave'){
+   armR.rotation.z=.16+Math.sin(gesture.time*9)*.75;
+   armR.rotation.x=-.25+Math.sin(gesture.time*9)*.22;setHandPose(signHandR,.08,.18);
+   if(gesture.time>2.3){gesture.active=false;armR.rotation.z=.16;armR.rotation.x=0;setHandPose(signHandR,0,0);}
+  }else{
+   armR.rotation.z=.16-Math.sin(gesture.time*8)*.24;
+   armL.rotation.z=-.16+Math.sin(gesture.time*8)*.16;setHandPose(signHandL,.22,.12);setHandPose(signHandR,.22,.12);
+  }
+ }
+ avatar.position.y=Math.sin(clock.elapsedTime*2.2)*.035;
+ namePlate.quaternion.copy(camera.quaternion);
+ renderer.render(scene,camera)}
+animate();loading.style.display='none';
+window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))});
+</script>
+</body></html>
